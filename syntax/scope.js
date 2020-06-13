@@ -28,6 +28,7 @@ alert(vscope);  // result : "global"
 function a() {
     var i = 0;  // 만약 'i = 0;'이라면 무한루프, 왜냐하면 전역변수 i가 0으로 계속 초기화되기 때문이다.
 }
+
 for(var i = 0; i < 5; i++) {    //  for문은 함수가 아니다. 내부에 선언된 변수는 전역변수이다.
     a();
     document.write(i);
@@ -101,4 +102,28 @@ a();
     함수 B()가 호출, 즉 사용되는 시점에서의 i가 호출되는 것이 아니다. 
 */
 
-var name = "zero";
+var name = 'zero'; // (1)변수 선언 (6)변수 대입
+function wow(word) { // (2)변수 선언 (3)변수 대입(초기화)
+  console.log(word + ' ' + name); // (11)
+}
+
+function say () { // (4)변수 선언 (5)변수 대입(초기화)
+  var name = 'nero'; // (8)
+  console.log(name); // (9)
+  wow('hello'); // (10)
+}
+say(); // (7)
+
+/* 
+    전역컨텍스트와 함수컨텍스를 구분해서 이해, 호이스팅(함수선언식은 함수선언과 동시에 초기화)으로 인한 변수 name값의 변화를 따라가면 됨
+
+    '전역 컨텍스트': {
+    변수객체: {
+        arguments: null,
+        variable: ['name', 'wow', 'say'],
+    },
+    scopeChain: ['전역 변수객체'],
+    this: window,
+    }
+
+*/
