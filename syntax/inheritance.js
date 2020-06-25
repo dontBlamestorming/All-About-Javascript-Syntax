@@ -5,42 +5,43 @@
 */
 
 function Person(name) {
-    this.name = name;
-    this.introduce = function() {
-        return "My name is " + this.name
-    }
+  this.name = name;
+  this.introduce = function() {
+    return "My name is " + this.name;
+  };
 }
 
 var p1 = new Person("dave");
-document.write(p1.introduce() + "<br />");  // My name is dave
+document.write(p1.introduce() + "<br />"); // My name is dave
 
 /*
     어떤 객체를 생성할 때 그 객체가 기본적으로 갖고 있어야 할 property를 위에서는 생성자 함수를 통해서 지정했다. 이렇게 property를 지정하는 방법이 다른 것도 있다.
 */
 
 function Person(name) {
-    this.name = name;
+  this.name = name;
 }
 
 Person.prototype.name = null;
 Person.prototype.introduce = function() {
-    return "My name is " + this.name;
-}
+  return "My name is " + this.name;
+};
 
 /*
     Person이라는 생성자함수에는 prototype이라고 하는 property가 있는데 그 안에는 어떤 객체가 들어가있다. 그 안에 변수나 함수 등으로 또 다른 property를 줄 수 있다. 위와같은 코드는 일단 상속을 위한 준비가 끝난 것이다.  
 */
 
 function Programmer(name) {
-    this.name = name;
+  this.name = name;
 }
 
 Programmer.prototype = new Person();
-Programmer.prototype.coding = function() {  // 부모 객체에서 복제한 객체에 기능을 추가하는 부분
-    return "Hello world!!!";
-}
+Programmer.prototype.coding = function() {
+  // 부모 객체에서 복제한 객체에 기능을 추가하는 부분
+  return "Hello world!!!";
+};
 
-var p1 = new Programmer('dave');
+var p1 = new Programmer("dave");
 document.write(p1.introduce() + "<br />");
 document.write(p1.coding() + "<br />");
 
@@ -58,18 +59,18 @@ document.write(p1.coding() + "<br />");
 */
 
 function Ultra() {
-    Ultra.prototype.ultraProp = true;
+  Ultra.prototype.ultraProp = true;
 }
 
 function Super() {
-    var t = new Ultra();
-    t.ultraProp = 5;    // 5
-    Super.prototype = t;    
+  var t = new Ultra();
+  t.ultraProp = 5; // 5
+  Super.prototype = t;
 }
 
 function Sub() {
-    Sub.prototype = new Super();
-    Sub.prototype.ultraProp = 4; // 4
+  Sub.prototype = new Super();
+  Sub.prototype.ultraProp = 4; // 4
 }
 
 var o = new Sub();
@@ -84,4 +85,63 @@ console.log(o.ultraProp); // true
 
     <주의>
     부모객체의 값을 상속받고 싶다고 '부모.prototype = 자식.prototype'으로 코딩하면 안된다. 상속에 기본은 '복제'이다. 앞의 코드는 복제가 아니라 1:1로 미러링하고 있기 때문에 객체를 상속받은 자식의 로직에서 변경이 일어날 시 부모 또한 그 영향을 직접적으로 당한다. 생성자를 통해 꼭 복제를 해고 상속을 받아야한다. 
+*/
+
+/*
+    After ES6
+    밑에 코드에서 만약 메소드를 추가하고 싶다면 **와 같이 생성하면 될까? 동작이야 하겠지만 만약 Person과 같이 직접만든 클래스가 아닌, 다른 라이브러리라고 한다면, 코드를 업데이트 했을 때 예기치 못한 상황에 빠질 수도 있다. 혹은 협업을 할 때에 1~2번 사용할 로직을 본래 클래스에 업데이트 하는 것은 부담스럽다. 이 때 상속을 하여 하나의 클래스를 더 만든다.
+*/
+
+class Person {
+  constructor(name, first, second) {
+    this.name = name;
+    this.first = first;
+    this.second = second;
+  }
+
+  sum() {
+    return "prototype : " + (this.first + this.second);
+  }
+  // **   avg() {
+  //          return (this.first + this.second) / 2;
+  //      }
+}
+
+// Person.prototype.sum() = function() {
+//     return 'prototype :' + this.first + this.second;
+// }
+
+var kim = new Person("kim", 10, 20);
+console.log(kim); // { name : kim, first : 10, second : 20 }
+
+var lee = new Person("lee", 20, 20);
+lee.sum = function() {
+  return "this : " + this.first + this.second;
+};
+
+/* ----------------------------------------------------------- */
+class PersonPlusAvg extends Person {
+  /*
+    중복되는 부분
+  constructor(name, first, second) {
+    this.name = name;
+    this.first = first;
+    this.second = second;
+  }
+
+  sum() {
+    return "prototype : " + (this.first + this.second);
+  }
+*/
+  avg() {
+    return (this.first + this.second) / 2;
+  }
+}
+
+var kim = new PersonPlusAvg("kim", 10, 20);
+console.log(kim.sum()); // 30
+console.log(kim.avg()); // 15
+
+/*
+    'extends'라는 키워드 뒤로 본래 상속시켜줄 클래스를 써준다. PersonPlusAvg는 Person의 property와 method를 상속받고, 여기에 내가 사용하고 싶은 메서드나 프로퍼티를 추가하여 사용한다. 
 */
